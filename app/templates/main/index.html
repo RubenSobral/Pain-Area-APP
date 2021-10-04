@@ -1,0 +1,13 @@
+{% extends 'layouts/base.html' %}
+
+{% block content %}
+    <div class="ui text container">
+      <h1>Olá {% if not (current_user.is_authenticated) %} Convidado {% else %} {{ current_user.full_name() }} {% endif %}!</h1>
+      
+      <p>O desenvolvimento de uma aplicação informática portátil, de fácil aplicabilidade e rapidez no cálculo da área de dor tratada, 
+        constitui uma ferramenta de grande utilidade na prática clínica na avaliação da área de dor tratada e eficácia do 
+        tratamento através da determinação da área após aplicação do tratamento de capsaicina.</p>
+
+    </div>
+{% endblock %}
+

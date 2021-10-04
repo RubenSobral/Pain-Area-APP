@@ -1,0 +1,120 @@
+{% extends 'layouts/base.html' %}
+
+{% block content %}
+    <div class="ui text container">
+      <h1>Olá {% if not (current_user.is_authenticated) %} Convidado {% else %} {{ current_user.full_name() }} {% endif %}!</h1>
+<html>
+	<head>
+		<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+		<!--<script src="https://code.jquery.com/jquery-3.5.1.min.js" crossorigin="anonymous"></script>-->
+		<script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
+		<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" crossorigin="anonymous"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js"></script>  
+		<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.js"></script>  
+		<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/ui-lightness/jquery-ui.css"	rel="stylesheet" type="text/css" />  
+	</head>
+	
+   <body>
+      <title>Python Flask Image Upload and Display Example</title>
+	  <h2>Insira as informações do paciente </h2>
+<h2>Selecione uma imagem para fazer upload </h2>
+<p>
+	{% with messages = get_flashed_messages() %}
+	  {% if messages %}
+		<ul>
+		{% for message in messages %}
+		  <li>{{ message }}</li>
+		{% endfor %}
+		</ul>
+	  {% endif %}
+	{% endwith %}
+</p>
+
+{% if filename %}
+	<div>
+		<img src="{{ url_for('display_image', filename=filename) }}" >
+	</div>
+{% endif %}
+
+<form method="post" action="/handle_form" enctype="multipart/form-data">
+	<input type="hidden" name="csrf_token" value="{{ csrf_token() }}" /> <!-- Do Bypass CSRF Token -->
+	<dl>
+		<p>
+			<input type="file" name="file" autocomplete="off" required>
+		</p>
+    </dl>
+<p>
+	<div class="autocomplete" >
+        <label for="nomeLabel">Identificação do Paciente</label>
+		<input type="text" id="nome" name="nome" style="width:200px;">
+		<script>
+			$(function() {
+				$.ajax({
+					url: '{{ url_for("main.autocomplete") }}'
+					}).done(function (data) {
+						$('#nome').autocomplete({
+							source: data,
+							minLength: 1
+						});
+					});
+				});
+		</script>
+	</div>
+</p>
+
+
+	<p>
+		<label for="diagnostico">Diagnostico:</label>
+	
+		<select name="diag" id="diag" method="GET" action="/form">
+			{% for d in diags %}
+			<option value= "{{d}}" SELECTED>{{d}}</option>"
+			{% endfor %}
+		</select> 
+	</p>
+
+	<p>
+	<label for="dor"> Intensidade</label>
+
+	<select name="dor" id="dor">
+		{% for intensity in range(11) %}
+		<option value= "{{intensity}}" SELECTED>{{intensity}}</option>"
+		{% endfor %}
+
+	</select>
+</p>
+
+<p>
+	<label for="dn4">DN4</label>
+
+	<select name="dn4" id="dn4" method="GET" action="/form">
+		{% for painDN4 in range(11) %}
+		<option value= "{{painDN4}}" SELECTED>{{painDN4}}</option>"
+		{% endfor %}
+	</select>
+</p>
+
+	<label for="localizacao">Localização da dor:</label>
+
+	<select name="local" id="local" method="GET" action="/form">
+		{% for membro in body %}
+		<option value= "{{membro}}" SELECTED>{{membro}}</option>"
+		{% endfor %}
+	
+	</select> 
+
+	<p>
+		<label for="data">Data: </label>
+		<input type="date" name="datetime">
+	</p>
+	<p>
+		<label for="notas">Notas: </label>
+		<textarea type="text" id="notas" name="notas"></textarea>
+	</p>  
+	<p>
+		<input type="submit" value="Submit">
+	</p>
+</form>
+   </body>
+</html>
+{% endblock %}

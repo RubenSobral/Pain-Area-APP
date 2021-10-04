@@ -1,0 +1,84 @@
+{% extends 'layouts/base.html' %}
+
+{% block content %}
+    <div class="ui stackable grid container">
+        <div class="sixteen wide tablet twelve wide computer centered column">
+            <a class="ui basic compact button" href="{{ url_for('admin.index') }}">
+                <i class="caret left icon"></i>
+                Back to dashboard
+            </a>
+            <h2 class="ui header">
+                Registered Patients
+                <div class="sub header">
+                    View and manage currently registered patients.
+                </div>
+            </h2>
+
+            <div class="ui menu">
+                <div id="select-role" class="ui dropdown item">
+                    <div class="text">
+                        All Patients
+                    </div>
+                    <i class="dropdown icon"></i>
+                    <div class="menu">
+                        <div class="item" data-value="">All patients</div>
+                        {% for r in roles %}
+                            <div class="item" data-value="{{ r.name }}">{{ r.name }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="ui right search item">
+                    <div class="ui transparent icon input">
+                        <input id="search-patients" type="text" placeholder="Search patients…">
+                        <i class="search icon"></i>
+                    </div>
+                </div>
+            </div>
+
+            {# Use overflow-x: scroll so that mobile views don't freak out
+             # when the table is too wide #}
+            <div style="overflow-x: scroll;">
+                <table class="ui searchable sortable unstackable selectable celled table">
+                    <thead>
+                        <tr>
+
+                            <th>Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for p in patients | sort(attribute='name') %}
+                        <tr onclick="window.location.href = '{{ url_for('admin.patient_info', patient_id=p.id) }}';">
+
+                            <td>{{p.nome}}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#search-patients').keyup(function () {
+                var searchText = $(this).val();
+                if (searchText.length > 0) {
+                    $('tbody td:icontains(' + searchText + ')').addClass('positive');
+                    $('td.positive').not(':icontains(' + searchText + ')').removeClass('positive');
+                    $('tbody td').not(':icontains(' + searchText + ')').closest('tr').addClass('hidden').hide();
+                    $('tr.hidden:icontains(' + searchText + ')').removeClass('hidden').show();
+                } else {
+                    $('td.positive').removeClass('positive');
+                    $('tr.hidden').removeClass('hidden').show();
+                }
+            });
+
+            $('#select-role').dropdown({
+                onChange: function (value, text, $selectedItem) {
+                    $('td.patient.role:contains(' + value + ')').closest('tr').removeClass('hidden').show();
+                    $('td.patient.role').not(':contains(' + value + ')').closest('tr').addClass('hidden').hide();
+                }
+            });
+        });
+    </script>
+{% endblock %}

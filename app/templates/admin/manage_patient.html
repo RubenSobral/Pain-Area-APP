@@ -1,0 +1,90 @@
+{% extends 'layouts/base.html' %}
+{% import 'macros/form_macros.html' as f %}
+
+{% set deletion_endpoint = 'admin.delete_patient_request' %}
+
+{% set endpoints = [
+    ('admin.patient_info', 'Patient information'),
+    ('admin.change_patient_name', 'Change name'),
+    (deletion_endpoint, 'Delete patient')
+] %}
+
+{% macro navigation(items) %}
+    <div class="ui vertical fluid secondary menu">
+        {% for route, name in items %}
+            {% set href = url_for(route, patient_id=patient.id) %}
+            <a class="item {% if request.endpoint == route %}active{% endif %}" href="{{ href }}">
+                {{ name }}
+            </a>
+        {% endfor %}
+    </div>
+{% endmacro %}
+
+{% macro patient_info(patient) %}
+    <table class="ui compact definition table">
+        <tr><td>Full name</td><td>{{ '%s' % (patient.nome) }}</td></tr>
+    </table>
+{% endmacro %}
+
+{% block content %}
+    <div class="ui stackable centered grid container">
+        <div class="twelve wide column">
+            <a class="ui basic compact button" href="{{ url_for('admin.registered_patients') }}">
+                <i class="caret left icon"></i>
+                Back to all patients
+            </a>
+            <h2 class="ui header">
+                {{ patient.nome() }}
+                <div class="sub header">View and manage {{ patient.nome }}’s account.</div>
+            </h2>
+        </div>
+        <div class="stretched divided very relaxed row">
+            <div class="four wide column">
+                {{ navigation(endpoints) }}
+            </div>
+            <div class="eight wide column">
+                {% if request.endpoint == deletion_endpoint %}
+                    <h3 class="ui red block header">
+                        <i class="warning circle icon"></i>
+                        <div class="content">
+                            Esta ação é permanente
+                            <div class="sub header">
+                                Excluir uma conta de utilizador não é uma alteração reversível. Qualquer informação associada a 
+                                esta conta será removida e não pode ser recuperada. 
+                            </div>
+                        </div>
+                    </h3>
+
+                    <div class="ui form">
+                        <div class="inline field">
+                            <div class="ui deletion checkbox">
+                                <input type="checkbox" tabindex="0" class="hidden">
+                                <label>Eu entendo que esta ação não pode ser desfeita. </label>
+                            </div>
+                        </div>
+                        <a class="ui disabled negative deletion button">
+                            Apagar este paciente
+                        </a>
+                    </div>
+                    </div>
+                {% elif form %}
+                    {{ f.render_form(form) }}
+                {% else %}
+                    {{ patient_info(patient) }}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        $('.deletion.checkbox').checkbox({
+            onChecked: function() {
+                $('.deletion.button').removeClass('disabled')
+                        .attr('href', '{{ url_for('admin.delete_patient', patient_id=patient.id) }}');
+            },
+            onUnchecked: function() {
+                $('.deletion.button').addClass('disabled').removeAttr('href');
+            }
+        });
+    </script>
+{% endblock %}

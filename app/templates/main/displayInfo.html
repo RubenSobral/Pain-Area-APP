@@ -1,0 +1,78 @@
+{% extends 'layouts/base.html' %}
+
+{% block content %}
+    <div class="ui text container">
+      <h1>Olá {% if not (current_user.is_authenticated) %} Convidado {% else %} {{ current_user.full_name() }} {% endif %}!</h1>
+<html>
+	<head>
+	<style>
+		* {
+			box-sizing: border-box;
+		  }
+		  
+		  /* Create two equal columns that floats next to each other */
+		  .column {
+			float: left;
+			width: 50%;
+			padding: 10px;
+		  }
+		  
+		  /* Clear floats after the columns */
+		  .row:after {
+			content: "";
+			display: table;
+			clear: both;
+		  }
+		</style>
+	</head>
+		<body>
+      <title>Python Flask Image Upload and Display Example</title>
+<p>
+	{% with messages = get_flashed_messages() %}
+	  {% if messages %}
+		<ul>
+		{% for message in messages %}
+		  <li>{{ message }}</li>
+		{% endfor %}
+		</ul>
+	  {% endif %}
+	{% endwith %}
+</p>
+
+<div class="row">
+	<div class="column">
+	{% if filename %}
+		<div>
+			<img src="{{ url_for('main.display_image', filename=filename) }}" width="250" height="250">
+		</div>
+	{% endif %}
+  	</div>
+ 
+	<div class="column">
+		<p></p>
+		<div>
+			<label for="areaLabel">Identificação do Paciente: {{load_info['nome']}}</label>
+		</div>
+		<div>
+			<label for="areaLabel">Diagnostico: {{load_info['diag']}}</label>
+		</div>
+		<div>
+			<label for="areaLabel">Intensidade da dor: {{load_info['dor']}}</label>
+		</div>
+		<div>
+			<label for="areaLabel">DN4: {{load_info['dn4']}}</label>
+		</div>
+		<div>
+			<label for="areaLabel">Localização da dor: {{load_info['local']}}</label>
+		</div>
+		<div>
+			<label for="areaLabel">Area da Regiao: {{'%0.2f'|format(load_info['area']|float)}} cm²</label>
+		</div>
+		<div>
+			<label for="areaLabel">Notas: {{load_info['notas']}}</label>
+		</div>
+	</div>
+</div>
+</body>
+</html>
+{% endblock %}
